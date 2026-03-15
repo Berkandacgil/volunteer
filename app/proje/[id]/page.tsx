@@ -14,6 +14,7 @@ import {
   AlertCircle,
   Plus,
   Loader2,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
@@ -287,18 +288,15 @@ export default function ProjectPage({ params }: ProjectPageProps) {
             </div>
 
             {/* Admin Actions */}
-            {isAdmin && (
+            {(isAdmin || (user && project.createdBy === user.id)) && (
               <div className="bg-card rounded-xl p-6 border border-border">
-                <h3 className="font-medium text-foreground mb-4">Admin İşlemleri</h3>
+                <h3 className="font-medium text-foreground mb-4">Proje Yönetimi</h3>
                 <div className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start">
-                    Projeyi Düzenle
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    Güncelleme Ekle
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start text-destructive">
-                    Projeyi Sil
+                  <Button variant="outline" className="w-full justify-start" asChild>
+                    <Link href={`/proje/${id}/yonetim`}>
+                      <Settings className="w-4 h-4 mr-2" />
+                      Yönetim Paneli
+                    </Link>
                   </Button>
                 </div>
               </div>

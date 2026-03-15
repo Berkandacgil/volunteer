@@ -84,6 +84,29 @@ export async function updateUserProfile(
   await updateDoc(doc(db, "users", uid), rest);
 }
 
+export async function getUserProfiles(uids: string[]): Promise<UserProfile[]> {
+  if (uids.length === 0) return [];
+  const profiles: UserProfile[] = [];
+  // Firestore 'in' query max 30 eleman destekler, chunk'layalım
+  const chunks = [];
+  for (let i = 0; i < uids.length; i += 30) {
+    chunks.push(uids.slice(i, i + 30));
+  }
+  for (const chunk of chunks) {
+    const q = query(collection(db, "users"), where("__name__", "in", chunk));
+    const snapshot = await getDocs(q);
+    snapshot.docs.forEach((d) => {
+      const data = d.data();
+      profiles.push({
+        ...data,
+        id: d.id,
+        joinedAt: data.joinedAt?.toDate?.() ?? new Date(data.joinedAt),
+      } as UserProfile);
+    });
+  }
+  return profiles;
+}
+
 // ==================== PROJECTS ====================
 
 export async function getAllProjects(): Promise<Project[]> {
